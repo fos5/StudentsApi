@@ -1,9 +1,12 @@
 package com.festus.login.repository;
 
 import com.festus.login.model.Student;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
-public interface StudentRepo extends JpaRepository<Student, Long> {
+public interface StudentRepo extends MongoRepository<Student, Long> {
+    Optional<Student> findByEmail(String email);
 }

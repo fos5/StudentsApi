@@ -1,1 +1,8 @@
-
+spring:
+  application:
+    name: login-app
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: login
