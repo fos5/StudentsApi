@@ -37,4 +37,10 @@ public class StudentController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(studentService.getById(id));
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @Valid @RequestBody Student student) throws ResourceNotFoundException {
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(studentService.updateStudent(id,student));
+    }
 }

@@ -31,7 +31,14 @@ public class StudentService {
         return studentList;
     }
     public Student getById(Long id) throws ResourceNotFoundException {
-       return studentRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("The student with id: "+ id +
-                "does not exist"));
+       return studentRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException(String.format("The student with id : %d does not exist",id)));
+    }
+    public Student updateStudent(Long id, Student student) throws ResourceNotFoundException {
+        Student oldStudent = studentRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format("Student with id %d does not exist", id)));
+        oldStudent.setId(id);
+        oldStudent.setStudentName(student.getStudentName());
+        oldStudent.setEmail(student.getEmail());
+        oldStudent.setRoles(student.getRoles());
+        return oldStudent;
     }
 }
