@@ -39,6 +39,6 @@ public class StudentService {
         oldStudent.setStudentName(student.getStudentName());
         oldStudent.setEmail(student.getEmail());
         oldStudent.setRoles(student.getRoles());
-        return oldStudent;
+        return studentRepo.save(oldStudent);
     }
 }

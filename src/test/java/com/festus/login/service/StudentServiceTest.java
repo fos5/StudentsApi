@@ -99,6 +99,23 @@ class StudentServiceTest {
     }
 
     @Test
-    void updateStudent() {
+    void updateStudent() throws ResourceNotFoundException {
+        Long id = 2L;
+        Student existing = new Student();
+        existing.setId(id);
+        existing.setStudentName("Rahman Jago");
+        existing.setEmail("jago@gmail.com");
+        existing.setRoles(Roles.ADMIN);
+        Student updated = new Student();
+        updated.setId(id);
+        updated.setStudentName("Rahman Jago");
+        updated.setEmail("jago2@gmail.com");
+        updated.setRoles(Roles.ADMIN);
+        when(studentRepo.findById(id)).thenReturn(Optional.of(existing));
+        when(studentRepo.save(existing)).thenReturn(existing);
+        Student actualStudent = studentService.updateStudent(id,updated);
+        assertEquals(updated.getStudentName(),actualStudent.getStudentName());
+        assertEquals(updated.getEmail(),actualStudent.getEmail());
+
     }
 }
