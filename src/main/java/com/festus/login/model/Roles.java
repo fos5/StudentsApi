@@ -1,5 +1,5 @@
 package com.festus.login.model;
 
 public enum Roles {
-    ADMIN, STUDENT;
+    ADMIN, STUDENT,MANAGER;
 }

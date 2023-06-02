@@ -4,6 +4,7 @@ import com.festus.login.error.exception.ApplicationException;
 import com.festus.login.error.exception.ConflictRequestException;
 import com.festus.login.error.exception.ResourceNotFoundException;
 import com.festus.login.model.Student;
+import com.festus.login.model.dto.StudentDto;
 import com.festus.login.service.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
@@ -21,18 +22,18 @@ public class StudentController {
         this.studentService = studentService;
     }
     @PostMapping
-    public ResponseEntity<Student> createStudent(@Valid @RequestBody Student student) throws ConflictRequestException {
+    public ResponseEntity<?> createStudent(@Valid @RequestBody Student student) throws ConflictRequestException {
           return   ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(studentService.createStudent(student));
     }
     @GetMapping
-    public ResponseEntity<List<Student>> getAllStudents() throws ApplicationException, ResourceNotFoundException {
+    public ResponseEntity<List<StudentDto>> getAllStudents() throws ApplicationException, ResourceNotFoundException {
         return ResponseEntity.ok()
                 .body(studentService.getAll());
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Student> getById(@PathVariable Long id) throws ResourceNotFoundException {
+    public ResponseEntity<StudentDto> getById(@PathVariable Long id) throws ResourceNotFoundException {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(studentService.getById(id));

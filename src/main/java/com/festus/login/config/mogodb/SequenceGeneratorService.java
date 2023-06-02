@@ -1,4 +1,4 @@
-package com.festus.login.config.mongoDb;
+package com.festus.login.config.mogodb;
 
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Update;

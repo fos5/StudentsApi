@@ -1,4 +1,4 @@
-package com.festus.login.config.mongoDb;
+package com.festus.login.config.mogodb;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;

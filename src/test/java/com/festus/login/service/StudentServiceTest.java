@@ -1,11 +1,12 @@
 package com.festus.login.service;
 
-import com.festus.login.config.mongoDb.SequenceGeneratorService;
+import com.festus.login.config.mogodb.SequenceGeneratorService;
 import com.festus.login.error.exception.ConflictRequestException;
 import com.festus.login.error.exception.ResourceNotFoundException;
 import com.festus.login.model.Roles;
 import com.festus.login.model.Student;
-import com.festus.login.repository.StudentRepo;
+import com.festus.login.model.dto.StudentDto;
+import com.festus.login.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,29 +25,30 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class StudentServiceTest {
     @Mock
-    StudentRepo studentRepo;
+   private UserRepository userRepository;
     @Mock
-    SequenceGeneratorService sequenceGeneratorService;
+  private  SequenceGeneratorService sequenceGeneratorService;
+  private final  StudentDTORowMapper studentDTORowMapper = new StudentDTORowMapper();
     @InjectMocks
     StudentService studentService;
     @BeforeEach
     void setUp() {
-        studentService = new StudentService(studentRepo,sequenceGeneratorService);
+        studentService = new StudentService(userRepository,sequenceGeneratorService, studentDTORowMapper);
     }
     @Test
     void getStudents(){
         List<Student> expectedList = new ArrayList<>();
         expectedList.add(new Student());
         expectedList.add(new Student());
-        when(studentRepo.findAll()).thenReturn(expectedList);
+        when(userRepository.findAll()).thenReturn(expectedList);
 
-        List<Student> actualStudents = studentRepo.findAll();
+        List<Student> actualStudents = userRepository.findAll();
         assertEquals(expectedList,actualStudents);
     }
     @Test
     void getAllWhenThereIsNone() {
         List<Student> emptyList = new ArrayList<>();
-        when(studentRepo.findAll()).thenReturn(emptyList);
+        when(userRepository.findAll()).thenReturn(emptyList);
         ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () -> {
             studentService.getAll();
         });
@@ -59,9 +61,9 @@ class StudentServiceTest {
                 .email("jaaja@opobo.com")
                 .roles(Roles.ADMIN)
                 .build();
-        when(studentRepo.findByEmail(student.getEmail())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(student.getEmail())).thenReturn(Optional.empty());
         when(sequenceGeneratorService.generateSequence(Student.SEQUENCE_NAME)).thenReturn(1L);
-        when(studentRepo.save(student)).thenReturn(student);
+        when(userRepository.save(student)).thenReturn(student);
         Student createdStudent = studentService.createStudent(student);
         assertNotNull(createdStudent.getId());
         assertEquals(student.getEmail(),createdStudent.getEmail());
@@ -72,7 +74,7 @@ class StudentServiceTest {
         String email = "test@gmail.com";
         Student existingStudent = new Student();
         existingStudent.setEmail(email);
-        when(studentRepo.findByEmail(email.toLowerCase())).thenReturn(Optional.of(existingStudent));
+        when(userRepository.findByEmail(email.toLowerCase())).thenReturn(Optional.of(existingStudent));
         Student student = new Student();
         student.setEmail(email);
         ConflictRequestException ex = assertThrows(ConflictRequestException.class, () -> {
@@ -85,13 +87,15 @@ class StudentServiceTest {
         Long id = 1L;
         Student existing = new Student();
         existing.setId(id);
-        when(studentRepo.findById(id)).thenReturn(Optional.of(existing));
-        Student byId = studentService.getById(1L);
-        assertEquals(byId,existing);
+        when(userRepository.findById(id)).thenReturn(Optional.of(existing));
+        StudentDto expected = studentDTORowMapper.apply(existing);
+        StudentDto actual = studentService.getById(id);
+
+        assertEquals(actual,expected);
     }
     @Test
     void ShouldThrowErrorWhenIdDoesNotExist(){
-        when(studentRepo.findById(any())).thenReturn(Optional.empty());
+        when(userRepository.findById(any())).thenReturn(Optional.empty());
         ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () -> {
             studentService.getById(2L);
         });
@@ -111,8 +115,8 @@ class StudentServiceTest {
         updated.setStudentName("Rahman Jago");
         updated.setEmail("jago2@gmail.com");
         updated.setRoles(Roles.ADMIN);
-        when(studentRepo.findById(id)).thenReturn(Optional.of(existing));
-        when(studentRepo.save(existing)).thenReturn(existing);
+        when(userRepository.findById(id)).thenReturn(Optional.of(existing));
+        when(userRepository.save(existing)).thenReturn(existing);
         Student actualStudent = studentService.updateStudent(id,updated);
         assertEquals(updated.getStudentName(),actualStudent.getStudentName());
         assertEquals(updated.getEmail(),actualStudent.getEmail());
